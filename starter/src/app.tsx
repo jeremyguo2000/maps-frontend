@@ -49,7 +49,7 @@ const initialLocations: Poi[] = [
 // TODO: get places information from the backend server
 
 const App = () => (
- <APIProvider apiKey={'REMOVED_API_KEY'} onLoad={() => console.log('Maps API has loaded.')}>
+ <APIProvider apiKey={'nil'} onLoad={() => console.log('Maps API has loaded.')}>
    <h1>Hello, world!</h1>
     <Map
       defaultZoom={13}
