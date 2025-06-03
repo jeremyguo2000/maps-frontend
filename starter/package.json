@@ -11,5 +11,8 @@
     "start": "vite",
     "start-local": "vite --config ./vite.config.local.js",
     "build": "vite build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29"
   }
 }
