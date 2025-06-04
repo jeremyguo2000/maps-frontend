@@ -22,8 +22,8 @@ import {
   useImperativeHandle,
   useRef
 } from 'react';
+import type { RefObject } from 'react';
 
-import type {Ref} from 'react';
 import {GoogleMapsContext, latLngEquals} from '@vis.gl/react-google-maps';
 
 type CircleEventProps = {
@@ -39,7 +39,7 @@ type CircleEventProps = {
 
 export type CircleProps = google.maps.CircleOptions & CircleEventProps;
 
-export type CircleRef = Ref<google.maps.Circle | null>;
+export type CircleRef = RefObject<google.maps.Circle | null>;
 
 function useCircle(props: CircleProps) {
   const {

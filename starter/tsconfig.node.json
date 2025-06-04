@@ -1,0 +1,12 @@
+// tsconfig.node.json
+{
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler", // Changed from "Node"
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["vite.config.js"] // Includes your Vite config file for type checking
+}
