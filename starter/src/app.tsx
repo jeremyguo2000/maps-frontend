@@ -191,6 +191,17 @@ const App = () => (
     onLoad={() => console.log("Maps API has loaded.")}
   >
     <h1>Hello, world!</h1>
+    <input
+      type="text"
+      placeholder="Command me e.g., Add a pin for Eiffel Tower and show me its details"
+      style={{
+        width: "100%", // Takes up 100% of parent's width
+        maxWidth: "700px", // But won't exceed 700px
+        margin: "10px",
+        padding: "10px",
+        fontSize: "1.2em",
+      }}
+    />
     <Map
       defaultZoom={13}
       defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
