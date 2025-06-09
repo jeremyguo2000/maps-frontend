@@ -92,7 +92,7 @@ const LLMChatInput = () => {
     <div style={{ maxWidth: '700px', margin: '10px auto' }}>
       <input
         type="text"
-        placeholder="Command me e.g., Add a pin for Eiffel Tower and show me its details"
+        placeholder="e.g. Show me the best places to go in Sydney"
         style={{
           width: '100%',
           padding: '10px',

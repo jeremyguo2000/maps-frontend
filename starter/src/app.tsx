@@ -192,11 +192,9 @@ const App = () => (
     apiKey={process.env.GOOGLE_MAPS_API_KEY ?? ""}
     onLoad={() => console.log("Maps API has loaded.")}
   >
-    <h1>Hello, world!</h1>
-    // In your App.jsx or any component
     <div className="bg-blue-500 text-white p-4 rounded-lg">
       <h1 className="text-2xl font-bold">Testing Tailwind</h1>
-      <p className="mt-2">If you see blue background and white text, Tailwind is working!</p>
+      <p className="mt-2">TODO: If you see blue background and white text, Tailwind is working!</p>
     </div>
     <LLMChatInput />
     <Map
@@ -216,15 +214,6 @@ const App = () => (
     </Map>
   </APIProvider>
 );
-
-
-const msgLLM = () => {
-  // This function is a placeholder for the LLM message handling logic.
-  // You can implement your LLM interaction here.
-  console.log("LLM message function called");
-  
-}
-
 
 const PoiMarkers = (props: { pois: Poi[] }) => {
   const map = useMap();
