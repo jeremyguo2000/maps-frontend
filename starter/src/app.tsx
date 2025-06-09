@@ -12,6 +12,8 @@ import {
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { Circle } from "./components/circle";
+import './index.css'
+import LLMChatInput from './components/LLMChatInput';
 
 type Poi = {
   key: string;
@@ -44,7 +46,7 @@ type PlaceDetails = {
   }>;
 };
 
-const locations: Poi[] = [
+const initialLocations: Poi[] = [
   {
     key: "operaHouse",
     name: "Sydney Opera House",
@@ -191,17 +193,12 @@ const App = () => (
     onLoad={() => console.log("Maps API has loaded.")}
   >
     <h1>Hello, world!</h1>
-    <input
-      type="text"
-      placeholder="Command me e.g., Add a pin for Eiffel Tower and show me its details"
-      style={{
-        width: "100%", // Takes up 100% of parent's width
-        maxWidth: "700px", // But won't exceed 700px
-        margin: "10px",
-        padding: "10px",
-        fontSize: "1.2em",
-      }}
-    />
+    // In your App.jsx or any component
+    <div className="bg-blue-500 text-white p-4 rounded-lg">
+      <h1 className="text-2xl font-bold">Testing Tailwind</h1>
+      <p className="mt-2">If you see blue background and white text, Tailwind is working!</p>
+    </div>
+    <LLMChatInput />
     <Map
       defaultZoom={13}
       defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
@@ -215,10 +212,19 @@ const App = () => (
         )
       }
     >
-      <PoiMarkers pois={locations} />
+      <PoiMarkers pois={initialLocations} />
     </Map>
   </APIProvider>
 );
+
+
+const msgLLM = () => {
+  // This function is a placeholder for the LLM message handling logic.
+  // You can implement your LLM interaction here.
+  console.log("LLM message function called");
+  
+}
+
 
 const PoiMarkers = (props: { pois: Poi[] }) => {
   const map = useMap();
