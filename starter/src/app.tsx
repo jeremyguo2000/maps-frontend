@@ -14,38 +14,9 @@ import type { Marker } from "@googlemaps/markerclusterer";
 import { Circle } from "./components/circle";
 import './index.css'
 import LLMChatInput from './components/LLMChatInput';
+import type { Poi, PlaceDetails} from './types'
 
-type Poi = {
-  key: string;
-  name: string;
-  location: google.maps.LatLngLiteral;
-  place_id?: string;
-};
-type PlaceDetails = {
-  name: string;
-  place_id?: string;
-  formatted_address?: string;
-  geometry: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-  rating?: number;
-  user_ratings_total?: number;
-  opening_hours?: {
-    weekday_text: string[];
-  };
-  website?: string;
-  international_phone_number?: string;
-  photos?: Array<{
-    photo_reference: string;
-    html_attributions: string[];
-    height: number;
-    width: number;
-  }>;
-};
-
+/* TODO: get rid of this
 const initialLocations: Poi[] = [
   {
     key: "operaHouse",
@@ -182,38 +153,42 @@ const initialLocations: Poi[] = [
     },
     place_id: "ChIJs-MWMVuuEmsRN7STbIW1hv8",
   },
-];
+]; */
 
-// TODO: set up agent to fetch places information
-// TODO: get places information from the backend server
+const App = () => {
+  const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
+  const handleNewPlaces = (places: Poi[]) => {
+    setCurrentPlaces(places);
+  };
 
-const App = () => (
-  <APIProvider
-    apiKey={process.env.GOOGLE_MAPS_API_KEY ?? ""}
-    onLoad={() => console.log("Maps API has loaded.")}
-  >
-    <div className="bg-blue-500 text-white p-4 rounded-lg">
-      <h1 className="text-2xl font-bold">Testing Tailwind</h1>
-      <p className="mt-2">TODO: If you see blue background and white text, Tailwind is working!</p>
-    </div>
-    <LLMChatInput />
-    <Map
-      defaultZoom={13}
-      defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
-      mapId="test_map_id"
-      onCameraChanged={(ev: MapCameraChangedEvent) =>
-        console.log(
-          "camera changed:",
-          ev.detail.center,
-          "zoom:",
-          ev.detail.zoom,
-        )
-      }
+  return (
+    <APIProvider
+      apiKey={process.env.GOOGLE_MAPS_API_KEY ?? ""}
+      onLoad={() => console.log("Maps API has loaded.")}
     >
-      <PoiMarkers pois={initialLocations} />
-    </Map>
-  </APIProvider>
-);
+      <div className="bg-blue-500 text-white p-4 rounded-lg">
+        <h1 className="text-2xl font-bold">Testing Tailwind</h1>
+        <p className="mt-2">TODO: If you see blue background and white text, Tailwind is working!</p>
+      </div>
+      <LLMChatInput onNewPlaces={handleNewPlaces} />
+      <Map
+        defaultZoom={13}
+        defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
+        mapId="test_map_id"
+        onCameraChanged={(ev: MapCameraChangedEvent) =>
+          console.log(
+            "camera changed:",
+            ev.detail.center,
+            "zoom:",
+            ev.detail.zoom,
+          )
+        }
+      >
+        <PoiMarkers pois={currentPlaces} />
+      </Map>
+    </APIProvider>
+  )
+};
 
 const PoiMarkers = (props: { pois: Poi[] }) => {
   const map = useMap();
@@ -319,7 +294,6 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
         <AdvancedMarker
           key={poi.key}
           position={poi.location}
-          gmpClickable={true}
           onClick={(ev) => handleClick(ev, poi)} // Pass both event and poi
           ref={(marker) => setMarkerRef(marker, poi.key)}
         >

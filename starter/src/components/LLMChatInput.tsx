@@ -1,19 +1,33 @@
 // components/LLMChatInput.jsx
 import React, { useState } from 'react';
+import type { Poi } from '../types';
 
-// You can define this function directly in this file, or import it if it's in utils.js
-// For simplicity in this new component, I'll put it here.
+type LLMChatInputProps = {
+  onNewPlaces: (places: Poi[]) => void; // Callback to pass places to App
+  // onNewMessage: (message: string) => void; // Callback for LLM text messages
+};
+
+
+type CallLLMParams = {
+  prompt: string;
+  setLlmResponse: React.Dispatch<React.SetStateAction<string>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  clearInput: () => void;
+  // You might also add onNewPlaces and onNewMessage here if callLLM itself
+  // needs to trigger these parent callbacks directly.
+  // For now, let's assume LLMChatInput will handle passing LLM's response
+  // to onNewMessage after callLLM finishes.
+  onNewPlaces: (places: Poi[]) => void; // Optional if callLLM finds places
+  // onNewMessageCallback?: (message: string) => void; // Optional if callLLM returns a message
+};
+
 const callLLM = async ({
   prompt,
   setLlmResponse,
   setIsLoading,
   clearInput, // New prop to allow clearing input from parent
-}: {
-  prompt: string;
-  setLlmResponse: React.Dispatch<React.SetStateAction<string>>;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  clearInput: () => void;
-}) => {
+  onNewPlaces 
+}: CallLLMParams) => {
   if (!prompt.trim()) {
     return;
   }
@@ -41,10 +55,34 @@ const callLLM = async ({
     if (!response.body) {
       throw new Error('No response body received from server.');
     }
+
+    const data = await response.json();
+
+    if (data.status ===  "success") {
+      const places: Poi[] = data.places || [];
+      setLlmResponse(data.message || 'No message received from LLM.');
+      // Call the onNewPlaces callback to pass the places to the parent component
+      // onNewPlaces(places); // Uncomment this if you want to use it in your parent component
+
+      if (places.length > 0) {
+        const formattedPlaces = places.map(p => ({
+          key: p.place_id ?? '',
+          name: p.name,
+          location: {
+            lat: p.location.lat,
+            lng: p.location.lng
+          },
+          place_id: p.place_id ?? ''
+        }));
+        onNewPlaces(formattedPlaces); // Pass the places to the parent component
+      }}
+
+    /*
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let accumulatedResponse = '';
 
+    // TODO: should we disable streaming for now?
     while (true) {
       const { done, value } = await reader.read();
       if (done) {
@@ -53,7 +91,8 @@ const callLLM = async ({
       const chunk = decoder.decode(value, { stream: true });
       accumulatedResponse += chunk;
       setLlmResponse(accumulatedResponse);
-    }
+    }*/
+
   } catch (error) {
     if (typeof error === 'object' && error !== null && 'name' in error && (error as any).name === 'AbortError') {
       console.log('Fetch aborted');
@@ -65,10 +104,10 @@ const callLLM = async ({
     setIsLoading(false);
     clearInput(); // Call the clearInput function passed from parent
   }
-};
+}
 
 
-const LLMChatInput = () => {
+const LLMChatInput:  React.FC<LLMChatInputProps> = ({ onNewPlaces }) => {
   const [inputValue, setInputValue] = useState('');
   const [llmResponse, setLlmResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +123,7 @@ const LLMChatInput = () => {
         setLlmResponse,
         setIsLoading,
         clearInput: handleClearInput, // Pass the function to clear input
+        onNewPlaces, // Pass the onNewPlaces callback
       });
     }
   };
