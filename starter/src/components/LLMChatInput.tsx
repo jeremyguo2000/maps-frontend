@@ -2,9 +2,18 @@
 import React, { useState } from 'react';
 import type { Poi } from '../types';
 
+// Define a type for the map view data
+interface MapViewData {
+  latitude: number;
+  longitude: number;
+  zoom_level?: number;
+  place_name?: string;
+}
+
 type LLMChatInputProps = {
   onNewPlaces: (places: Poi[]) => void; // Callback to pass places to App
   // onNewMessage: (message: string) => void; // Callback for LLM text messages
+  onSetMapView: (mapView: MapViewData | null) => void; // New callback for map view
 };
 
 
@@ -17,8 +26,8 @@ type CallLLMParams = {
   // needs to trigger these parent callbacks directly.
   // For now, let's assume LLMChatInput will handle passing LLM's response
   // to onNewMessage after callLLM finishes.
-  onNewPlaces: (places: Poi[]) => void; // Optional if callLLM finds places
-  // onNewMessageCallback?: (message: string) => void; // Optional if callLLM returns a message
+  onNewPlaces: (places: Poi[]) => void; 
+  onSetMapView: (mapView: MapViewData | null) => void; // New callback for map view
 };
 
 const callLLM = async ({
@@ -26,7 +35,8 @@ const callLLM = async ({
   setLlmResponse,
   setIsLoading,
   clearInput, // New prop to allow clearing input from parent
-  onNewPlaces 
+  onNewPlaces,
+  onSetMapView
 }: CallLLMParams) => {
   if (!prompt.trim()) {
     return;
@@ -60,9 +70,18 @@ const callLLM = async ({
 
     if (data.status ===  "success") {
       const places: Poi[] = data.places || [];
+      const mapView: MapViewData | undefined = data.map_view; 
+      
       setLlmResponse(data.message || 'No message received from LLM.');
-      // Call the onNewPlaces callback to pass the places to the parent component
-      // onNewPlaces(places); // Uncomment this if you want to use it in your parent component
+   
+      if (mapView) {
+        onSetMapView(mapView)
+      } else {
+        onSetMapView(null)
+      }
+      // TODO:there seem to be more pins on the map than would be expected by the LLM response
+
+      console.log('LLM Response:', data.message);
 
       if (places.length > 0) {
         const formattedPlaces = places.map(p => ({
@@ -74,7 +93,9 @@ const callLLM = async ({
           },
           place_id: p.place_id ?? ''
         }));
-        onNewPlaces(formattedPlaces); // Pass the places to the parent component
+        console.log('Formatted Places: ', formattedPlaces);
+        // Call the onNewPlaces callback to pass the places to the parent component
+        onNewPlaces(formattedPlaces); 
       }}
 
     /*
@@ -107,7 +128,7 @@ const callLLM = async ({
 }
 
 
-const LLMChatInput:  React.FC<LLMChatInputProps> = ({ onNewPlaces }) => {
+const LLMChatInput:  React.FC<LLMChatInputProps> = ({ onNewPlaces, onSetMapView }) => {
   const [inputValue, setInputValue] = useState('');
   const [llmResponse, setLlmResponse] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -123,7 +144,8 @@ const LLMChatInput:  React.FC<LLMChatInputProps> = ({ onNewPlaces }) => {
         setLlmResponse,
         setIsLoading,
         clearInput: handleClearInput, // Pass the function to clear input
-        onNewPlaces, // Pass the onNewPlaces callback
+        onNewPlaces, 
+        onSetMapView// Pass the onNewPlaces callback
       });
     }
   };

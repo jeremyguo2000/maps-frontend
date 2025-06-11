@@ -16,149 +16,38 @@ import './index.css'
 import LLMChatInput from './components/LLMChatInput';
 import type { Poi, PlaceDetails} from './types'
 
-/* TODO: get rid of this
-const initialLocations: Poi[] = [
-  {
-    key: "operaHouse",
-    name: "Sydney Opera House",
-    location: {
-      lat: -33.8567844,
-      lng: 151.213108,
-    },
-    place_id: "ChIJ3S-JXmauEmsRUcIaWtf4MzE",
-  },
-  {
-    key: "tarongaZoo",
-    name: "Taronga Zoo",
-    location: {
-      lat: -33.8472767,
-      lng: 151.2188164,
-    },
-    place_id: "ChIJq6qqWiSsEmsRJuIpepyEua4",
-  },
-  {
-    key: "manlyBeach",
-    name: "Manly Beach",
-    location: {
-      lat: -33.8209738,
-      lng: 151.2563253,
-    },
-    place_id: "ChIJK8ybIQmrEmsRUHjYur4mf6k",
-  },
-  {
-    key: "hyderPark",
-    name: "Hyde Park",
-    location: {
-      lat: -33.8690081,
-      lng: 151.2052393,
-    },
-    place_id: "ChIJhRoYKUkFdkgRDL20SU9sr9E",
-  },
-  {
-    key: "theRocks",
-    name: "The Rocks",
-    location: {
-      lat: -33.8587568,
-      lng: 151.2058246,
-    },
-    place_id: "ChIJs49dtkKuEmsRYM0yFmh9AQU",
-  },
-  {
-    key: "circularQuay",
-    name: "Circular Quay",
-    location: {
-      lat: -33.858761,
-      lng: 151.2055688,
-    },
-    place_id: "ChIJra9q0mmuEmsR4Hy11eshm38",
-  },
-  {
-    key: "harbourBridge",
-    name: "Sydney Harbour Bridge",
-    location: {
-      lat: -33.852228,
-      lng: 151.2038374,
-    },
-    place_id: "ChIJ49XqJV2uEmsRPsTAF7eOlGg",
-  },
-  {
-    key: "kingsCross",
-    name: "Kings Cross",
-    location: {
-      lat: -33.8737375,
-      lng: 151.222569,
-    },
-    place_id: "ChIJzU08xxAbdkgRuWtd0P4Rb2E",
-  },
-  {
-    key: "botanicGardens",
-    name: "Royal Botanic Garden",
-    location: {
-      lat: -33.864167,
-      lng: 151.216387,
-    },
-    place_id: "ChIJWaTdYGuuEmsRoOfx-Wh9AQ8",
-  },
-  {
-    key: "museumOfSydney",
-    name: "Museum of Sydney",
-    location: {
-      lat: -33.8636005,
-      lng: 151.2092542,
-    },
-    place_id: "ChIJ_1pC8mmuEmsRrvud0Ftcoyg",
-  },
-  {
-    key: "maritimeMuseum",
-    name: "Australian National Maritime Museum",
-    location: {
-      lat: -33.869395,
-      lng: 151.198648,
-    },
-    place_id: "ChIJTze93zmuEmsRhvE6T4Y9DhU",
-  },
-  {
-    key: "kingStreetWharf",
-    name: "King Street Wharf",
-    location: {
-      lat: -33.8665445,
-      lng: 151.1989808,
-    },
-    place_id: "ChIJkfDzJ72vEmsR8xtYbk5f0p0",
-  },
-  {
-    key: "aquarium",
-    name: "SEA LIFE Sydney Aquarium",
-    location: {
-      lat: -33.869627,
-      lng: 151.202146,
-    },
-    place_id: "ChIJYV-J-ziuEmsRIMyoFaMedU4",
-  },
-  {
-    key: "darlingHarbour",
-    name: "Darling Harbour",
-    location: {
-      lat: -33.87488,
-      lng: 151.1987113,
-    },
-    place_id: "ChIJt9trB0euEmsR8NbepO14j3M",
-  },
-  {
-    key: "barangaroo",
-    name: "Barangaroo Reserve",
-    location: {
-      lat: -33.8605523,
-      lng: 151.1972205,
-    },
-    place_id: "ChIJs-MWMVuuEmsRN7STbIW1hv8",
-  },
-]; */
+interface MapViewData {
+  latitude: number;
+  longitude: number;
+  zoom_level?: number;
+  place_name?: string;
+}
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
   const handleNewPlaces = (places: Poi[]) => {
     setCurrentPlaces(places);
+  };
+
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 1.3521, lng: 103.8198 });
+  const [mapZoom, setMapZoom] = useState<number>(10); // 
+  
+
+  const handleSetMapView = (mapViewData: MapViewData | null) => {
+    if (mapViewData && typeof mapViewData.latitude === 'number' && typeof mapViewData.longitude === 'number') {
+      setMapCenter({ lat: mapViewData.latitude, lng: mapViewData.longitude });
+      if (mapViewData.zoom_level && typeof mapViewData.zoom_level === 'number') {
+        setMapZoom(mapViewData.zoom_level);
+      } else {
+        // Fallback zoom if LLM doesn't provide one (e.g., default to city-level)
+        setMapZoom(12);
+      }
+      console.log(`Map view updated to: Lat ${mapViewData.latitude}, Lng ${mapViewData.longitude}, Zoom ${mapViewData.zoom_level || 'default (12)'}`);
+    } else if (mapViewData === null) {
+      // Optionally reset to default view or do nothing if null is passed
+      // For now, if null, it means no new instruction, so keep current view.
+      console.log("No new map view instruction.");
+    }
   };
 
   return (
@@ -170,7 +59,7 @@ const App = () => {
         <h1 className="text-2xl font-bold">Testing Tailwind</h1>
         <p className="mt-2">TODO: If you see blue background and white text, Tailwind is working!</p>
       </div>
-      <LLMChatInput onNewPlaces={handleNewPlaces} />
+      <LLMChatInput onNewPlaces={handleNewPlaces} onSetMapView={handleSetMapView} />
       <Map
         defaultZoom={13}
         defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
@@ -182,12 +71,31 @@ const App = () => {
             "zoom:",
             ev.detail.zoom,
           )
-        }
+        } 
       >
+         <MapMover center={mapCenter} zoom={mapZoom}  />
         <PoiMarkers pois={currentPlaces} />
       </Map>
     </APIProvider>
   )
+};
+
+const MapMover = ({ center, zoom }: { center: { lat: number; lng: number }, zoom: number }) => {
+  const map = useMap(); // Get the map instance
+
+  // Effect to move the map when center or zoom state variables change
+  useEffect(() => {
+    if (map) {
+      // Create a CameraOptions object
+      const cameraOptions: google.maps.CameraOptions = {
+        center: center, // Use your center state
+        zoom: zoom,     // Use your zoom state
+      };
+      map.moveCamera(cameraOptions);
+    }
+  }, [map, center, zoom]); // Re-run effect when map, center, or zoom changes
+
+  return null; // This component doesn't render anything visible
 };
 
 const PoiMarkers = (props: { pois: Poi[] }) => {
