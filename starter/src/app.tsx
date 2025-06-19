@@ -12,9 +12,9 @@ import {
 import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 import { Circle } from "./components/circle";
-import './index.css'
-import LLMChatInput from './components/LLMChatInput';
-import type { Poi, PlaceDetails} from './types'
+import "./index.css";
+import LLMChatInput from "./components/LLMChatInput";
+import type { Poi, PlaceDetails } from "./types";
 
 interface MapViewData {
   latitude: number;
@@ -29,20 +29,31 @@ const App = () => {
     setCurrentPlaces(places);
   };
 
-  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({ lat: 1.3521, lng: 103.8198 });
-  const [mapZoom, setMapZoom] = useState<number>(10); // 
-  
+  const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({
+    lat: 1.3521,
+    lng: 103.8198,
+  });
+  const [mapZoom, setMapZoom] = useState<number>(10); //
 
   const handleSetMapView = (mapViewData: MapViewData | null) => {
-    if (mapViewData && typeof mapViewData.latitude === 'number' && typeof mapViewData.longitude === 'number') {
+    if (
+      mapViewData &&
+      typeof mapViewData.latitude === "number" &&
+      typeof mapViewData.longitude === "number"
+    ) {
       setMapCenter({ lat: mapViewData.latitude, lng: mapViewData.longitude });
-      if (mapViewData.zoom_level && typeof mapViewData.zoom_level === 'number') {
+      if (
+        mapViewData.zoom_level &&
+        typeof mapViewData.zoom_level === "number"
+      ) {
         setMapZoom(mapViewData.zoom_level);
       } else {
         // Fallback zoom if LLM doesn't provide one (e.g., default to city-level)
         setMapZoom(12);
       }
-      console.log(`Map view updated to: Lat ${mapViewData.latitude}, Lng ${mapViewData.longitude}, Zoom ${mapViewData.zoom_level || 'default (12)'}`);
+      console.log(
+        `Map view updated to: Lat ${mapViewData.latitude}, Lng ${mapViewData.longitude}, Zoom ${mapViewData.zoom_level || "default (12)"}`,
+      );
     } else if (mapViewData === null) {
       // Optionally reset to default view or do nothing if null is passed
       // For now, if null, it means no new instruction, so keep current view.
@@ -55,11 +66,10 @@ const App = () => {
       apiKey={process.env.GOOGLE_MAPS_API_KEY ?? ""}
       onLoad={() => console.log("Maps API has loaded.")}
     >
-      <div className="bg-blue-500 text-white p-4 rounded-lg">
-        <h1 className="text-2xl font-bold">Testing Tailwind</h1>
-        <p className="mt-2">TODO: If you see blue background and white text, Tailwind is working!</p>
-      </div>
-      <LLMChatInput onNewPlaces={handleNewPlaces} onSetMapView={handleSetMapView} />
+      <LLMChatInput
+        onNewPlaces={handleNewPlaces}
+        onSetMapView={handleSetMapView}
+      />
       <Map
         defaultZoom={13}
         defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
@@ -71,16 +81,22 @@ const App = () => {
             "zoom:",
             ev.detail.zoom,
           )
-        } 
+        }
       >
-         <MapMover center={mapCenter} zoom={mapZoom}  />
+        <MapMover center={mapCenter} zoom={mapZoom} />
         <PoiMarkers pois={currentPlaces} />
       </Map>
     </APIProvider>
-  )
+  );
 };
 
-const MapMover = ({ center, zoom }: { center: { lat: number; lng: number }, zoom: number }) => {
+const MapMover = ({
+  center,
+  zoom,
+}: {
+  center: { lat: number; lng: number };
+  zoom: number;
+}) => {
   const map = useMap(); // Get the map instance
 
   // Effect to move the map when center or zoom state variables change
@@ -88,8 +104,8 @@ const MapMover = ({ center, zoom }: { center: { lat: number; lng: number }, zoom
     if (map) {
       // Create a CameraOptions object
       const cameraOptions: google.maps.CameraOptions = {
-        center: center, // Use your center state
-        zoom: zoom,     // Use your zoom state
+        center: center,
+        zoom: zoom,
       };
       map.moveCamera(cameraOptions);
     }
@@ -141,7 +157,6 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
       console.log("marker clicked:", ev.latLng.toString());
       map.panTo(ev.latLng);
       setCircleCenter({ lat: ev.latLng.lat(), lng: ev.latLng.lng() });
-
       setInfoWindowPosition({ lat: ev.latLng.lat(), lng: ev.latLng.lng() });
       setInfoWindowOpen(true);
 
