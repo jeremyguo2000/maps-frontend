@@ -14,14 +14,9 @@ import type { Marker } from "@googlemaps/markerclusterer";
 import { Circle } from "./components/circle";
 import "./index.css";
 import LLMChatInput from "./components/LLMChatInput";
-import type { Poi, PlaceDetails } from "./types";
-
-interface MapViewData {
-  latitude: number;
-  longitude: number;
-  zoom_level?: number;
-  place_name?: string;
-}
+import type { Poi } from "./types";
+import { usePlaceDetails } from "./hooks/usePlaceDetails";
+import { MapViewData } from "./types/index"; // TODO: why is this path not the shortcut
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -33,7 +28,7 @@ const App = () => {
     lat: 1.3521,
     lng: 103.8198,
   });
-  const [mapZoom, setMapZoom] = useState<number>(10); //
+  const [mapZoom, setMapZoom] = useState<number>(10); 
 
   const handleSetMapView = (mapViewData: MapViewData | null) => {
     if (
@@ -125,30 +120,10 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
   const [infoWindowOpen, setInfoWindowOpen] = useState(false);
   const [infoWindowPosition, setInfoWindowPosition] =
     useState<google.maps.LatLngLiteral | null>(null);
-  const [selectedPlaceDetails, setSelectedPlaceDetails] =
-    useState<PlaceDetails | null>(null); // New state for detailed info
-  const [loadingPlaceDetails, setLoadingPlaceDetails] = useState(false); // New state for loading indicator
+  
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
 
-  const fetchPlaceDetails = useCallback(async (placeId: string) => {
-    setLoadingPlaceDetails(true);
-    setSelectedPlaceDetails(null); // Clear previous details
-    try {
-      // TODO: don't hardcode the URL
-      const response = await fetch(
-        `http://127.0.0.1:5000/api/place-details?place_id=${placeId}`,
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: PlaceDetails = await response.json();
-      setSelectedPlaceDetails(data);
-    } catch (error) {
-      console.error("Failed to fetch place details:", error);
-      // Handle error, maybe display a message in the InfoWindow
-    } finally {
-      setLoadingPlaceDetails(false);
-    }
-  }, []);
+  const { selectedPlaceDetails, loadingPlaceDetails } = usePlaceDetails(selectedPlaceId);
 
   const handleClick = useCallback(
     (ev: google.maps.MapMouseEvent, poi: Poi) => {
@@ -162,15 +137,16 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
 
       // TODO: fetch place details from the backend server
       if (poi.place_id) {
-        fetchPlaceDetails(poi.place_id);
+        setSelectedPlaceId(poi.place_id); // Set the selected place ID
       } else {
-        setSelectedPlaceDetails(null); // Clear details if no place_id
+        setSelectedPlaceId(null)
+
         console.warn(
           `No place_id available for ${poi.name}. Cannot fetch details.`,
         );
       }
     },
-    [map, fetchPlaceDetails],
+    [map],
   );
 
   // Initialize MarkerClusterer, if the map has changed
@@ -232,7 +208,7 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
           position={infoWindowPosition}
           onCloseClick={() => {
             setInfoWindowOpen(false);
-            setSelectedPlaceDetails(null); // Clear details when closing
+            setSelectedPlaceId(null); // Clear details when closing
           }}
         >
           {loadingPlaceDetails ? (
