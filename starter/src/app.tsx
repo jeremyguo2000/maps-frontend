@@ -17,6 +17,8 @@ import LLMChatInput from "./components/LLMChatInput";
 import type { Poi } from "./types";
 import { usePlaceDetails } from "./hooks/usePlaceDetails";
 import { MapViewData } from "./types/index"; // TODO: why is this path not the shortcut
+import { useMarkerClusterer } from "./hooks/useMarkerClusterer";
+import PoiMarkers from "./components_new/Map/PoiMarkers";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -109,11 +111,10 @@ const MapMover = ({
   return null; // This component doesn't render anything visible
 };
 
+/*
 const PoiMarkers = (props: { pois: Poi[] }) => {
   const map = useMap();
-  const [markers, setMarkers] = useState({} as { [key: string]: Marker });
-  // Create a ref to hold the MarkerClusterer instance
-  const clusterer = useRef<MarkerClusterer | null>(null);
+  const { createMarkerRef } = useMarkerClusterer();
   const [circleCenter, setCircleCenter] =
     useState<google.maps.LatLngLiteral | null>(null);
 
@@ -135,12 +136,10 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
       setInfoWindowPosition({ lat: ev.latLng.lat(), lng: ev.latLng.lng() });
       setInfoWindowOpen(true);
 
-      // TODO: fetch place details from the backend server
       if (poi.place_id) {
-        setSelectedPlaceId(poi.place_id); // Set the selected place ID
+        setSelectedPlaceId(poi.place_id);
       } else {
-        setSelectedPlaceId(null)
-
+        setSelectedPlaceId(null);
         console.warn(
           `No place_id available for ${poi.name}. Cannot fetch details.`,
         );
@@ -148,35 +147,6 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
     },
     [map],
   );
-
-  // Initialize MarkerClusterer, if the map has changed
-  useEffect(() => {
-    if (!map) return;
-    if (!clusterer.current) {
-      clusterer.current = new MarkerClusterer({ map });
-    }
-  }, [map]);
-
-  // Update markers, if the markers array has changed
-  useEffect(() => {
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(Object.values(markers));
-  }, [markers]);
-
-  const setMarkerRef = (marker: Marker | null, key: string) => {
-    if (marker && markers[key]) return;
-    if (!marker && !markers[key]) return;
-
-    setMarkers((prev) => {
-      if (marker) {
-        return { ...prev, [key]: marker };
-      } else {
-        const newMarkers = { ...prev };
-        delete newMarkers[key];
-        return newMarkers;
-      }
-    });
-  };
 
   return (
     <>
@@ -193,8 +163,8 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
         <AdvancedMarker
           key={poi.key}
           position={poi.location}
-          onClick={(ev) => handleClick(ev, poi)} // Pass both event and poi
-          ref={(marker) => setMarkerRef(marker, poi.key)}
+          onClick={(ev) => handleClick(ev, poi)}
+          ref={createMarkerRef(poi.key)} // Use the memoized ref callback
         >
           <Pin
             background={"#FBBC04"}
@@ -208,13 +178,12 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
           position={infoWindowPosition}
           onCloseClick={() => {
             setInfoWindowOpen(false);
-            setSelectedPlaceId(null); // Clear details when closing
+            setSelectedPlaceId(null);
           }}
         >
           {loadingPlaceDetails ? (
             <div>Loading place details...</div>
           ) : selectedPlaceDetails ? (
-            // Display detailed information from selectedPlaceDetails
             <div>
               <h3>{selectedPlaceDetails.name}</h3>
               {selectedPlaceDetails.formatted_address && (
@@ -253,10 +222,8 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
                     </ul>
                   </div>
                 )}
-              {/* You can add more fields here based on your PlaceDetails type */}
             </div>
           ) : (
-            // Fallback if no details are fetched or place_id is missing
             <div>
               <h3>
                 {infoWindowPosition
@@ -273,7 +240,7 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
       )}
     </>
   );
-};
+};*/
 
 const container = document.getElementById("app");
 if (container) {
