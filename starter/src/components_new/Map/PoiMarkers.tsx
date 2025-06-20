@@ -1,5 +1,10 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { AdvancedMarker, Pin, useMap, InfoWindow } from "@vis.gl/react-google-maps";
+import {
+  AdvancedMarker,
+  Pin,
+  useMap,
+  InfoWindow,
+} from "@vis.gl/react-google-maps";
 import { Circle } from "../../components/circle";
 import { usePlaceDetails } from "../../hooks/usePlaceDetails";
 import { useMarkerClusterer } from "../../hooks/useMarkerClusterer";
@@ -14,10 +19,11 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
   const [infoWindowOpen, setInfoWindowOpen] = useState(false);
   const [infoWindowPosition, setInfoWindowPosition] =
     useState<google.maps.LatLngLiteral | null>(null);
-  
+
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
 
-  const { selectedPlaceDetails, loadingPlaceDetails } = usePlaceDetails(selectedPlaceId);
+  const { selectedPlaceDetails, loadingPlaceDetails } =
+    usePlaceDetails(selectedPlaceId);
 
   const handleClick = useCallback(
     (ev: google.maps.MapMouseEvent, poi: Poi) => {
@@ -44,15 +50,15 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
   // Create a stable map of ref callbacks, only recreating when poi keys change
   const refCallbacks = useMemo(() => {
     const callbacks = new Map<string, (marker: any) => void>();
-    
-    props.pois.forEach(poi => {
+
+    props.pois.forEach((poi) => {
       if (!callbacks.has(poi.key)) {
         callbacks.set(poi.key, (marker) => setMarkerRef(marker, poi.key));
       }
     });
-    
+
     return callbacks;
-  }, [props.pois.map(poi => poi.key).join(','), setMarkerRef]);
+  }, [props.pois.map((poi) => poi.key).join(","), setMarkerRef]);
 
   return (
     <>
