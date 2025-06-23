@@ -99,22 +99,6 @@ const callLLM = async ({
         onNewPlaces(formattedPlaces);
       }
     }
-
-    /*
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let accumulatedResponse = '';
-
-    // TODO: should we disable streaming for now?
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      const chunk = decoder.decode(value, { stream: true });
-      accumulatedResponse += chunk;
-      setLlmResponse(accumulatedResponse);
-    }*/
   } catch (error) {
     if (
       typeof error === "object" &&

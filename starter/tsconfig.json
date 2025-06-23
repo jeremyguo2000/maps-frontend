@@ -1,6 +1,7 @@
 // tsconfig.json
 {
   "compilerOptions": {
+    "baseUrl": "./src",
     "target": "ESNext",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],

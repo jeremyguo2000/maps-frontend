@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   APIProvider,
   Map,
   MapCameraChangedEvent,
-  useMap,
 } from "@vis.gl/react-google-maps";
 import "./index.css";
 import LLMChatInput from "./components/LLMChatInput";
 import type { Poi } from "./types";
 import { MapViewData } from "./types/index"; // TODO: why is this path not the shortcut
 import PoiMarkers from "./components_new/Map/PoiMarkers";
+import MapMover from "./components_new/Map/MapMover";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -61,6 +61,7 @@ const App = () => {
       />
       <Map
         defaultZoom={13}
+        defaultCenter={{ lat: -33.8688, lng: 151.2093 }}
         mapId="test_map_id"
         onCameraChanged={(ev: MapCameraChangedEvent) =>
           console.log(
@@ -76,30 +77,6 @@ const App = () => {
       </Map>
     </APIProvider>
   );
-};
-
-const MapMover = ({
-  center,
-  zoom,
-}: {
-  center: { lat: number; lng: number };
-  zoom: number;
-}) => {
-  const map = useMap(); // Get the map instance
-
-  // Effect to move the map when center or zoom state variables change
-  useEffect(() => {
-    if (map) {
-      // Create a CameraOptions object
-      const cameraOptions: google.maps.CameraOptions = {
-        center: center,
-        zoom: zoom,
-      };
-      map.moveCamera(cameraOptions);
-    }
-  }, [map, center, zoom]); // Re-run effect when map, center, or zoom changes
-
-  return null; // This component doesn't render anything visible
 };
 
 const container = document.getElementById("app");
