@@ -1,6 +1,6 @@
 // components/LLMChatInput.jsx
 import React, { useState } from "react";
-import type { Poi } from "../types";
+import type { Poi } from "@/types";
 
 // Define a type for the map view data
 interface MapViewData {

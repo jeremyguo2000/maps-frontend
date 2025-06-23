@@ -5,12 +5,12 @@ import {
   MapCameraChangedEvent,
 } from "@vis.gl/react-google-maps";
 import "./index.css";
-import LLMChatInput from "./components/LLMChatInput";
+import LLMChatInput from "./components/Chat/LLMChatInput";
 import type { Poi } from "./types";
 import { MapViewData } from "./types/index"; // TODO: why is this path not the shortcut
-import PoiMarkers from "./components_new/Map/PoiMarkers";
-import MapMover from "./components_new/Map/MapMover";
-import GoogleMap from "./components_new/Map/GoogleMap";
+import PoiMarkers from "./components/Map/PoiMarkers";
+import MapMover from "./components/Map/MapMover";
+import GoogleMap from "./components/Map/GoogleMap";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
