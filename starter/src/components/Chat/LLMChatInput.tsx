@@ -1,14 +1,7 @@
 // components/LLMChatInput.jsx
 import React, { useState } from "react";
 import type { Poi } from "@/types";
-
-// Define a type for the map view data
-interface MapViewData {
-  latitude: number;
-  longitude: number;
-  zoom_level?: number;
-  place_name?: string;
-}
+import { MapViewData } from "@/types/map";
 
 type LLMChatInputProps = {
   onNewPlaces: (places: Poi[]) => void; // Callback to pass places to App
