@@ -1,20 +1,22 @@
 // services/api.ts
 class ApiService {
-  private baseUrl = 'http://127.0.0.1:5000/api';
+  private baseUrl = "http://127.0.0.1:5000/api";
 
-  // TODO: fill up this 
+  // TODO: fill up this
 
   async chatWithLLM(prompt: string) {
     const response = await fetch(`${this.baseUrl}/gemini-chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
     });
     return response.json();
   }
 
   async getPlaceDetails(placeId: string) {
-    const response = await fetch(`${this.baseUrl}/place-details?place_id=${placeId}`);
+    const response = await fetch(
+      `${this.baseUrl}/place-details?place_id=${placeId}`,
+    );
     return response.json();
   }
 }

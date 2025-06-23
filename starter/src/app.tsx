@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  APIProvider,
-  MapCameraChangedEvent,
-} from "@vis.gl/react-google-maps";
+import { APIProvider, MapCameraChangedEvent } from "@vis.gl/react-google-maps";
 import "./index.css";
 import LLMChatInput from "./components/Chat/LLMChatInput";
 import type { Poi } from "./types";

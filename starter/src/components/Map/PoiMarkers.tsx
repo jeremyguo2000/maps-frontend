@@ -41,6 +41,7 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
   const handleInfoWindowClose = useCallback(() => {
     setInfoWindowOpen(false);
     setSelectedPlaceId(null);
+    setCircleCenter(null);
   }, []);
 
   // Create a stable map of ref callbacks, only recreating when poi keys change
@@ -58,15 +59,17 @@ const PoiMarkers = (props: { pois: Poi[] }) => {
 
   return (
     <>
-      <Circle
-        radius={800}
-        center={circleCenter}
-        strokeColor={"#0c4cb3"}
-        strokeOpacity={1}
-        strokeWeight={3}
-        fillColor={"#3b82f6"}
-        fillOpacity={0.3}
-      />
+      {circleCenter && (
+        <Circle
+          radius={800}
+          center={circleCenter}
+          strokeColor={"#0c4cb3"}
+          strokeOpacity={1}
+          strokeWeight={3}
+          fillColor={"#3b82f6"}
+          fillOpacity={0.3}
+        />
+      )}
       {props.pois.map((poi: Poi) => (
         <AdvancedMarker
           key={poi.key}
