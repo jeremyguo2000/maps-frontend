@@ -1,8 +1,7 @@
 // components/PlaceDetailsInfoWindow.tsx
 import React from "react";
 import { InfoWindow } from "@vis.gl/react-google-maps";
-// TODO: use the simpler path
-import { usePlaceDetails } from "../../hooks/usePlaceDetails";
+import { usePlaceDetails } from "@/hooks/usePlaceDetails";
 
 interface PlaceDetailsInfoWindowProps {
   position: google.maps.LatLngLiteral | null;

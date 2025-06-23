@@ -18,7 +18,7 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "@/*": ["./src/*"] // Example path alias for cleaner imports
+      "@/*": ["./*"] 
     }
   },
   "include": ["src"], // Important: Tells TS to include all files in your src folder

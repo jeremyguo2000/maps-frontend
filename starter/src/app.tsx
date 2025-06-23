@@ -2,7 +2,6 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   APIProvider,
-  Map,
   MapCameraChangedEvent,
 } from "@vis.gl/react-google-maps";
 import "./index.css";
@@ -11,6 +10,7 @@ import type { Poi } from "./types";
 import { MapViewData } from "./types/index"; // TODO: why is this path not the shortcut
 import PoiMarkers from "./components_new/Map/PoiMarkers";
 import MapMover from "./components_new/Map/MapMover";
+import GoogleMap from "./components_new/Map/GoogleMap";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -50,6 +50,10 @@ const App = () => {
     }
   };
 
+  const handleCameraChanged = (ev: MapCameraChangedEvent) => {
+    console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom);
+  };
+
   return (
     <APIProvider
       apiKey={process.env.GOOGLE_MAPS_API_KEY ?? ""}
@@ -59,22 +63,10 @@ const App = () => {
         onNewPlaces={handleNewPlaces}
         onSetMapView={handleSetMapView}
       />
-      <Map
-        defaultZoom={13}
-        defaultCenter={{ lat: -33.8688, lng: 151.2093 }}
-        mapId="test_map_id"
-        onCameraChanged={(ev: MapCameraChangedEvent) =>
-          console.log(
-            "camera changed:",
-            ev.detail.center,
-            "zoom:",
-            ev.detail.zoom,
-          )
-        }
-      >
+      <GoogleMap onCameraChanged={handleCameraChanged}>
         <MapMover center={mapCenter} zoom={mapZoom} />
         <PoiMarkers pois={currentPlaces} />
-      </Map>
+      </GoogleMap>
     </APIProvider>
   );
 };

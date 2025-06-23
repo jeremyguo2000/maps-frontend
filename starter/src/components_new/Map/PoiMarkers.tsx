@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { AdvancedMarker, Pin, useMap } from "@vis.gl/react-google-maps";
-import { Circle } from "../../components/circle";
+import { Circle } from "../ui/circle";
 import { useMarkerClusterer } from "../../hooks/useMarkerClusterer";
 import type { Poi } from "../../types";
 import PlaceDetailsInfoWindow from "./PlaceDetailsInfoWindow";
