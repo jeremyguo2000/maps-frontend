@@ -7,6 +7,8 @@ type LLMChatInputProps = {
   onNewPlaces: (places: Poi[]) => void; // Callback to pass places to App
   // onNewMessage: (message: string) => void; // Callback for LLM text messages
   onSetMapView: (mapView: MapViewData | null) => void; // New callback for map view
+  chatSessionId: string | null;
+  onNewSessionId: (newId: string) => void; // Callback to update sessionId in app.tsx
 };
 
 type CallLLMParams = {
@@ -20,6 +22,8 @@ type CallLLMParams = {
   // to onNewMessage after callLLM finishes.
   onNewPlaces: (places: Poi[]) => void;
   onSetMapView: (mapView: MapViewData | null) => void; // New callback for map view
+  chatSessionId: string | null;
+  onNewSessionId: (newId: string) => void; // Callback to update sessionId in app.tsx
 };
 
 const callLLM = async ({
@@ -29,6 +33,8 @@ const callLLM = async ({
   clearInput, // New prop to allow clearing input from parent
   onNewPlaces,
   onSetMapView,
+  chatSessionId,
+  onNewSessionId
 }: CallLLMParams) => {
   if (!prompt.trim()) {
     return;
@@ -39,13 +45,22 @@ const callLLM = async ({
   const controller = new AbortController();
   const signal = controller.signal;
 
+  const requestBody: { prompt: string; session_id?: string } = {
+    prompt: prompt
+  };
+
+  if (chatSessionId) {
+    requestBody.session_id = chatSessionId;
+  }
+
   try {
+
     const response = await fetch("http://127.0.0.1:5000/api/gemini-chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prompt: prompt }),
+      body: JSON.stringify(requestBody),
       signal,
     });
 
@@ -62,11 +77,16 @@ const callLLM = async ({
 
     const data = await response.json();
 
+    if (data.session_id && data.session_id !== chatSessionId) {
+      onNewSessionId(data.session_id); // Update the session ID in App.tsx state
+    }
+
     if (data.status === "success") {
       const places: Poi[] = data.places || [];
       const mapView: MapViewData | undefined = data.map_view;
 
       setLlmResponse(data.message || "No message received from LLM.");
+
 
       if (mapView) {
         onSetMapView(mapView);
@@ -115,6 +135,8 @@ const callLLM = async ({
 const LLMChatInput: React.FC<LLMChatInputProps> = ({
   onNewPlaces,
   onSetMapView,
+  chatSessionId,
+  onNewSessionId
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [llmResponse, setLlmResponse] = useState("");
@@ -133,7 +155,8 @@ const LLMChatInput: React.FC<LLMChatInputProps> = ({
         clearInput: handleClearInput, // Pass the function to clear input
         onNewPlaces,
         onSetMapView, // Pass the onNewPlaces callback
-      });
+        chatSessionId,
+        onNewSessionId     });
     }
   };
 

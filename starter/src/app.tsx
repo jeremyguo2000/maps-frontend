@@ -11,6 +11,13 @@ import GoogleMap from "./components/Map/GoogleMap";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
+
+  const handleNewSessionId = (newId: string) => {
+    console.log("New session ID received:", newId);
+    // Here you can update the session ID in your app state if needed
+    setChatSessionId(newId);
+  }
+
   const handleNewPlaces = (places: Poi[]) => {
     setCurrentPlaces(places);
   };
@@ -20,6 +27,7 @@ const App = () => {
     lng: 151.2093,
   });
   const [mapZoom, setMapZoom] = useState<number>(10);
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
 
   const handleSetMapView = (mapViewData: MapViewData | null) => {
     if (
@@ -59,6 +67,8 @@ const App = () => {
       <LLMChatInput
         onNewPlaces={handleNewPlaces}
         onSetMapView={handleSetMapView}
+        chatSessionId={chatSessionId}
+        onNewSessionId={handleNewSessionId}
       />
       <GoogleMap onCameraChanged={handleCameraChanged}>
         <MapMover center={mapCenter} zoom={mapZoom} />
