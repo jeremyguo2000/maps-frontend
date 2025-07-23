@@ -24,6 +24,7 @@ type CallLLMParams = {
   onSetMapView: (mapView: MapViewData | null) => void; // New callback for map view
   chatSessionId: string | null;
   onNewSessionId: (newId: string) => void; // Callback to update sessionId in app.tsx
+  setPictureUrl: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const callLLM = async ({
@@ -34,7 +35,8 @@ const callLLM = async ({
   onNewPlaces,
   onSetMapView,
   chatSessionId,
-  onNewSessionId
+  onNewSessionId,
+  setPictureUrl,
 }: CallLLMParams) => {
   if (!prompt.trim()) {
     return;
@@ -46,7 +48,7 @@ const callLLM = async ({
   const signal = controller.signal;
 
   const requestBody: { prompt: string; session_id?: string } = {
-    prompt: prompt
+    prompt: prompt,
   };
 
   if (chatSessionId) {
@@ -54,7 +56,6 @@ const callLLM = async ({
   }
 
   try {
-
     const response = await fetch("http://127.0.0.1:5000/api/gemini-chat", {
       method: "POST",
       headers: {
@@ -87,7 +88,6 @@ const callLLM = async ({
 
       setLlmResponse(data.message || "No message received from LLM.");
 
-
       if (mapView) {
         onSetMapView(mapView);
       } else {
@@ -96,6 +96,12 @@ const callLLM = async ({
       // TODO:there seem to be more pins on the map than would be expected by the LLM response
 
       console.log("LLM Response:", data.message);
+
+      // TODO: why so janky
+      if (data.picture_url) {
+        console.log("Picture URL received:", data.picture_url.url);
+        setPictureUrl(data.picture_url.url);
+      }
 
       if (places.length > 0) {
         const formattedPlaces = places.map((p) => ({
@@ -136,17 +142,18 @@ const LLMChatInput: React.FC<LLMChatInputProps> = ({
   onNewPlaces,
   onSetMapView,
   chatSessionId,
-  onNewSessionId
+  onNewSessionId,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [llmResponse, setLlmResponse] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [pictureUrl, setPictureUrl] = useState<string | null>(null);
 
   const handleClearInput = () => {
     setInputValue("");
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: { key: string }) => {
     if (e.key === "Enter") {
       callLLM({
         prompt: inputValue,
@@ -156,9 +163,13 @@ const LLMChatInput: React.FC<LLMChatInputProps> = ({
         onNewPlaces,
         onSetMapView, // Pass the onNewPlaces callback
         chatSessionId,
-        onNewSessionId     });
+        onNewSessionId,
+        setPictureUrl,
+      });
     }
   };
+
+  // TODO: add picture display functionality
 
   return (
     <div style={{ maxWidth: "700px", margin: "10px auto" }}>
@@ -191,6 +202,13 @@ const LLMChatInput: React.FC<LLMChatInputProps> = ({
         >
           <strong>LLM Response:</strong> {llmResponse}
         </div>
+      )}
+      {pictureUrl && (
+        <img
+          src={pictureUrl}
+          alt="LLM provided"
+          style={{ maxWidth: "100%", marginTop: "10px" }}
+        />
       )}
     </div>
   );

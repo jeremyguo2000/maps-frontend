@@ -16,7 +16,7 @@ const App = () => {
     console.log("New session ID received:", newId);
     // Here you can update the session ID in your app state if needed
     setChatSessionId(newId);
-  }
+  };
 
   const handleNewPlaces = (places: Poi[]) => {
     setCurrentPlaces(places);
