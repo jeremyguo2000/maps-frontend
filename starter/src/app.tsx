@@ -64,16 +64,22 @@ const App = () => {
       apiKey={process.env.GOOGLE_MAPS_API_KEY ?? ""}
       onLoad={() => console.log("Maps API has loaded.")}
     >
-      <LLMChatInput
-        onNewPlaces={handleNewPlaces}
-        onSetMapView={handleSetMapView}
-        chatSessionId={chatSessionId}
-        onNewSessionId={handleNewSessionId}
-      />
-      <GoogleMap onCameraChanged={handleCameraChanged}>
-        <MapMover center={mapCenter} zoom={mapZoom} />
-        <PoiMarkers pois={currentPlaces} />
-      </GoogleMap>
+    <div style={{ width: '600px' }}>
+    <LLMChatInput
+      onNewPlaces={handleNewPlaces}
+      onSetMapView={handleSetMapView}
+      chatSessionId={chatSessionId}
+      onNewSessionId={handleNewSessionId}
+    />
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+  <div style={{ width: '500px', height: '500px' }}>
+    <GoogleMap onCameraChanged={handleCameraChanged}>
+      <MapMover center={mapCenter} zoom={mapZoom} />
+      <PoiMarkers pois={currentPlaces} />
+    </GoogleMap>
+  </div>
+</div>
+  </div>
     </APIProvider>
   );
 };
