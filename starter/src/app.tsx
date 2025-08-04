@@ -61,7 +61,7 @@ const App = () => {
 
   return (
     <APIProvider
-      apiKey={process.env.GOOGLE_MAPS_API_KEY ?? ""}
+      apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ""}
       onLoad={() => console.log("Maps API has loaded.")}
     >
     <div style={{ width: '600px' }}>
