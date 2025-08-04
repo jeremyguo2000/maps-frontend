@@ -21,6 +21,6 @@
       "@/*": ["./*"] 
     }
   },
-  "include": ["src"], // Important: Tells TS to include all files in your src folder
+  "include": ["src", "vite-env.d.ts"], // Important: Tells TS to include all files in your src folder
   "references": [{ "path": "./tsconfig.node.json" }] // Links to the Node.js specific config
 }
