@@ -16,7 +16,7 @@ export function usePlaceDetails(placeId: string | null) {
       try {
         // TODO: don't hardcode the URL
         const response = await fetch(
-          `http://127.0.0.1:5000/api/place-details?place_id=${placeId}`,
+          `${import.meta.env.VITE_API_URL}/api/place-details?place_id=${placeId}`,
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
