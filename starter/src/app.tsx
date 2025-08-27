@@ -8,6 +8,8 @@ import { MapViewData } from "./types/index"; // TODO: why is this path not the s
 import PoiMarkers from "./components/Map/PoiMarkers";
 import MapMover from "./components/Map/MapMover";
 import GoogleMap from "./components/Map/GoogleMap";
+import {RoutesResponse } from "./types/route";
+
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -22,12 +24,17 @@ const App = () => {
     setCurrentPlaces(places);
   };
 
+  const handleNewRoutes = (routes: RoutesResponse) => {
+    setRoutes(routes);
+  }
+
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({
     lat: -33.8688,
     lng: 151.2093,
   });
   const [mapZoom, setMapZoom] = useState<number>(10);
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const [routes, setRoutes] = useState<RoutesResponse | null>(null);
 
   const handleSetMapView = (mapViewData: MapViewData | null) => {
     if (
@@ -59,6 +66,8 @@ const App = () => {
     console.log("camera changed:", ev.detail.center, "zoom:", ev.detail.zoom);
   };
 
+
+
   return (
     <APIProvider
       apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ""}
@@ -68,6 +77,7 @@ const App = () => {
     <LLMChatInput
       onNewPlaces={handleNewPlaces}
       onSetMapView={handleSetMapView}
+      onHandleNewRoutes={handleNewRoutes}
       chatSessionId={chatSessionId}
       onNewSessionId={handleNewSessionId}
     />

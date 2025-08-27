@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import type { Poi } from "@/types";
 import { MapViewData } from "@/types/map";
+import { RoutesResponse } from "@/types/route";
 
 type LLMChatInputProps = {
   onNewPlaces: (places: Poi[]) => void; // Callback to pass places to App
@@ -9,6 +10,7 @@ type LLMChatInputProps = {
   onSetMapView: (mapView: MapViewData | null) => void; // New callback for map view
   chatSessionId: string | null;
   onNewSessionId: (newId: string) => void; // Callback to update sessionId in app.tsx
+  onHandleNewRoutes: (routes: RoutesResponse) => void; // Callback to pass route data to App
 };
 
 type CallLLMParams = {
@@ -25,6 +27,7 @@ type CallLLMParams = {
   chatSessionId: string | null;
   onNewSessionId: (newId: string) => void; // Callback to update sessionId in app.tsx
   setPictureUrl: React.Dispatch<React.SetStateAction<string | null>>;
+  onHandleNewRoutes: (routes: RoutesResponse) => void; // Callback to pass route data to App
 };
 
 const callLLM = async ({
@@ -37,6 +40,7 @@ const callLLM = async ({
   chatSessionId,
   onNewSessionId,
   setPictureUrl,
+  onHandleNewRoutes,
 }: CallLLMParams) => {
   if (!prompt.trim()) {
     return;
@@ -85,6 +89,7 @@ const callLLM = async ({
     if (data.status === "success") {
       const places: Poi[] = data.places || [];
       const mapView: MapViewData | undefined = data.map_view;
+      const routes: RoutesResponse | undefined = data.route;
 
       setLlmResponse(data.message || "No message received from LLM.");
 
@@ -96,6 +101,10 @@ const callLLM = async ({
       // TODO:there seem to be more pins on the map than would be expected by the LLM response
 
       console.log("LLM Response:", data.message);
+      
+      // test polyline
+      // TODO: data is there, but display the route on the map
+      console.log("route data:", routes);
 
       // TODO: why so janky
       if (data.picture_url) {
