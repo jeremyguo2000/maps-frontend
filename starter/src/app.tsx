@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { APIProvider, MapCameraChangedEvent } from "@vis.gl/react-google-maps";
+import { APIProvider, GoogleMapsContext, MapCameraChangedEvent } from "@vis.gl/react-google-maps";
+import { Polyline } from "@react-google-maps/api";
 import "./index.css";
 import LLMChatInput from "./components/Chat/LLMChatInput";
 import type { Poi } from "./types";
@@ -9,7 +10,9 @@ import PoiMarkers from "./components/Map/PoiMarkers";
 import MapMover from "./components/Map/MapMover";
 import GoogleMap from "./components/Map/GoogleMap";
 import {RoutesResponse } from "./types/route";
-
+import { decode } from "@googlemaps/polyline-codec";
+import { useMap } from "@vis.gl/react-google-maps";
+import RouteViewer from "./components/Map/RouteViewer";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -26,6 +29,7 @@ const App = () => {
 
   const handleNewRoutes = (routes: RoutesResponse) => {
     setRoutes(routes);
+    console.log("routes i found:", routes);
   }
 
   const [mapCenter, setMapCenter] = useState<{ lat: number; lng: number }>({
@@ -71,6 +75,7 @@ const App = () => {
   return (
     <APIProvider
       apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ""}
+      libraries={['geometry']}
       onLoad={() => console.log("Maps API has loaded.")}
     >
     <div style={{ width: '600px' }}>
@@ -86,6 +91,7 @@ const App = () => {
     <GoogleMap onCameraChanged={handleCameraChanged}>
       <MapMover center={mapCenter} zoom={mapZoom} />
       <PoiMarkers pois={currentPlaces} />
+      {routes && <RouteViewer routes={routes} />}
     </GoogleMap>
   </div>
 </div>

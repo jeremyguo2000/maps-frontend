@@ -106,6 +106,10 @@ const callLLM = async ({
       // TODO: data is there, but display the route on the map
       console.log("route data:", routes);
 
+      if (routes) {
+        onHandleNewRoutes(routes);
+      }
+
       // TODO: why so janky
       if (data.picture_url) {
         console.log("Picture URL received:", data.picture_url.url);
@@ -152,6 +156,7 @@ const LLMChatInput: React.FC<LLMChatInputProps> = ({
   onSetMapView,
   chatSessionId,
   onNewSessionId,
+  onHandleNewRoutes
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [llmResponse, setLlmResponse] = useState("");
@@ -174,6 +179,7 @@ const LLMChatInput: React.FC<LLMChatInputProps> = ({
         chatSessionId,
         onNewSessionId,
         setPictureUrl,
+        onHandleNewRoutes
       });
     }
   };
