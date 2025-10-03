@@ -13,6 +13,7 @@ import {RoutesResponse } from "./types/route";
 import { decode } from "@googlemaps/polyline-codec";
 import { useMap } from "@vis.gl/react-google-maps";
 import RouteViewer from "./components/Map/RouteViewer";
+import TranscriptionUploader from "./components/ui/TranscriptionUploader";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -86,6 +87,7 @@ const App = () => {
       chatSessionId={chatSessionId}
       onNewSessionId={handleNewSessionId}
     />
+    <TranscriptionUploader />
     <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
   <div style={{ width: '500px', height: '500px' }}>
     <GoogleMap onCameraChanged={handleCameraChanged}>
