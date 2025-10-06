@@ -14,6 +14,7 @@ import { decode } from "@googlemaps/polyline-codec";
 import { useMap } from "@vis.gl/react-google-maps";
 import RouteViewer from "./components/Map/RouteViewer";
 import TranscriptionUploader from "./components/ui/TranscriptionUploader";
+import StreamingTranscriber from "./components/ui/StreamingTranscriber";
 
 const App = () => {
   const [currentPlaces, setCurrentPlaces] = useState<Poi[]>([]);
@@ -88,6 +89,7 @@ const App = () => {
       onNewSessionId={handleNewSessionId}
     />
     <TranscriptionUploader />
+    <StreamingTranscriber/>
     <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
   <div style={{ width: '500px', height: '500px' }}>
     <GoogleMap onCameraChanged={handleCameraChanged}>
