@@ -2,25 +2,42 @@ import React, { useState, useRef } from "react";
 
 const StreamingTranscriber: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState("");
+  const [interimTranscript, setInterimTranscript] = useState("");
+  const [finalTranscripts, setFinalTranscripts] = useState<string[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
 
   const startRecording = async () => {
+    setFinalTranscripts([]);
+    setInterimTranscript("");
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const ws = new WebSocket(`${import.meta.env.VITE_WS_URL}/api/transcribe_stream`);
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
-      setTranscript((prev) => prev + "\n" + event.data);
+      const data = JSON.parse(event.data);
+      if (data.is_final) {
+        setFinalTranscripts((prev) => [...prev, data.transcript]);
+        setInterimTranscript("");
+      } else {
+        setInterimTranscript(data.transcript);
+      }
+    };
+
+    ws.onclose = (event) => {
+      console.log("WebSocket closed:", event.code, event.reason);
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
     };
 
     ws.onopen = () => {
-      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
       recorderRef.current = recorder;
 
       recorder.ondataavailable = async (event) => {
-        console.log("Chunk size:", event.data.size);
+        // console.log("Chunk size:", event.data.size); // Too noisy
         
         if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
           const buffer = await event.data.arrayBuffer();
@@ -48,7 +65,9 @@ const StreamingTranscriber: React.FC = () => {
       )}
       <div style={{ marginTop: 15, whiteSpace: "pre-wrap" }}>
         <strong>Transcript:</strong>
-        <p>{transcript}</p>
+        <p>
+          {finalTranscripts.join(" ")} {interimTranscript}
+        </p>
       </div>
     </div>
   );
